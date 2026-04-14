@@ -31,7 +31,7 @@ print(type(variable))
 # print(5 % 2)
 # print(5 ** 2)
 
-# asignacion = -->  a = 10
+# asignacion  a = 10
 
 # secuencial
 # condicional
