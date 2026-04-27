@@ -50,3 +50,13 @@
 #print (resultado)
 
 #print(mi_modulo.suma(19,9))
+
+# persona = {"nombre": "Juan", "edad": 25, "ciudad": "Madrid"}
+
+# # print(persona["nombre"])
+# # print(type(persona))
+# # print(persona.items())
+
+# print(persona['nombre'])
+# persona["nombre"] = "Enzo"
+# print(persona['nombre'])
