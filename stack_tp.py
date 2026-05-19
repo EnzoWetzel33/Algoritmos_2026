@@ -5,10 +5,6 @@
 
 from stack_ import Stack
 
-# ------------------------------------
-# ALGORITMO 1: registrar movimientos
-# ------------------------------------
-
 pila_camino = Stack()
 pila_regreso = Stack()
 pila_aux = Stack()
@@ -23,7 +19,6 @@ while contador < cantidad:
     pila_camino.push({"pasos": pasos, "direccion": direccion})
     contador += 1
 
-# pasamos a pila_aux para invertir el orden y mostrar del primero al ultimo
 while pila_camino.size() > 0:
     movimiento = pila_camino.pop()
     pila_aux.push(movimiento)
@@ -33,10 +28,6 @@ print("Camino recorrido por el robot:")
 print()
 pila_aux.show()
 print()
-
-# ------------------------------------
-# ALGORITMO 2: secuencia de regreso
-# ------------------------------------
 
 while pila_aux.size() > 0:
     movimiento = pila_aux.pop()
