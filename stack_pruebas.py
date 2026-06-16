@@ -1,6 +1,6 @@
 from random import randint
 
-from stack import Stack
+from stack_ import Stack
 
 
 # pila = Stack()
