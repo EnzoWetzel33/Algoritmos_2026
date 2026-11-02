@@ -1,5 +1,8 @@
 from typing import Any, Optional
 from list_ import List
+from queue_ import Queue
+from stack_ import Stack
+from heap import HeapMin
 
 
 
@@ -12,6 +15,7 @@ class Graph(List):
             self.value = value
             self.other_values = other_values
             self.edges = List()
+            self.visited = False
 
             def _sort_by_destination(item):
                 return item.destination
@@ -80,6 +84,11 @@ class Graph(List):
 
         result  = self[pos_origin].edges.delete_value(destination, 'destination')
 
+        if not self.is_dir:
+            pos_destination = self.search(destination, 'value')
+            if pos_destination is not None:
+                self[pos_destination].edges.delete_value(origin, 'destination')
+
         return result
 
     def show(self):
@@ -90,25 +99,176 @@ class Graph(List):
                 for edge in vertex.edges:
                     print(edge)
 
+    def deep_show(self, origin) -> None:
+
+        def _deep_show(origin) -> None:
+            pos_origin = self.search(origin, 'value')
+            if pos_origin is not None:
+                visited = self[pos_origin].visited
+                if not visited:
+                    self[pos_origin].visited = True
+                    print(self[pos_origin].value)
+                    edges = self[pos_origin].edges
+                    for edge in edges:
+                        _deep_show(edge.destination)
+
+        for vertex in self:
+            vertex.visited = False
+        
+        _deep_show(origin)
+
+    def amplitude_show(self, origin) -> None:
+        for vertex in self:
+            vertex.visited = False
+    
+        pending_queue = Queue()
+        pos_origin = self.search(origin, 'value')
+        if pos_origin is not None:
+            visited = self[pos_origin].visited
+            if not visited:
+                pending_queue.arrive(self[pos_origin])
+                while pending_queue.size() > 0:
+                    # print()
+                    # pending_queue.show()
+                    # input()
+                    # print()
+                    vertex = pending_queue.attention()
+                    if not vertex.visited:
+                        vertex.visited = True
+                        print(vertex.value)
+                        edges = vertex.edges
+                        for edge in edges:
+                            # print(edge.destination)
+                            pos_next_vertex = self.search(edge.destination, 'value')
+                            pending_queue.arrive(self[pos_next_vertex])
+
+    def dijkstra(self, origin):
+        from math import inf
+        
+        no_visited = HeapMin()
+        path = Stack()
+        
+        for vertex in self:
+            distance = 0 if vertex.value == origin else inf
+            no_visited.arrive([vertex.value, vertex, None], distance)
+
+        while no_visited.size() > 0:
+            # for element in no_visited.elements:
+            #     print(element)
+            # print()
+            # input()
+            vertex = no_visited.attention()
+            costo_nodo_actual = vertex[0]
+            path.push([vertex[1][0], costo_nodo_actual, vertex[1][2]])
+            edges = vertex[1][1].edges
+            for edge in edges:
+                pos = no_visited.search(edge.destination)
+                if pos is not None:
+                    if costo_nodo_actual + edge.weight < no_visited.elements[pos][0]:
+                        no_visited.elements[pos][1][2] = vertex[1][0]
+                        no_visited.elements[pos][0] = costo_nodo_actual + edge.weight
+                        no_visited.change_priority(pos, costo_nodo_actual + edge.weight)
+        return path                    
+
+
+    def kruskal(self, origin_vertex):
+        def search_in_forest(forest, value):
+            for index, tree in enumerate(forest):
+                if value in tree:
+                    return index
+                
+        forest = []
+        edges = HeapMin()
+        for vertex in self:
+            forest.append(vertex.value)
+            for edge in vertex.edges:
+                edges.arrive([vertex.value, edge.destination], edge.weight)
+
+        # print(forest)
+        # for element in edges.elements:
+        #     print(element )
+        
+        while len(forest) > 1 and edges.size() > 0:
+            edge = edges.attention()
+            origin = search_in_forest(forest, edge[1][0])
+            destination = search_in_forest(forest, edge[1][1])
+            if origin is not None and destination is not None:
+                if origin != destination:
+                    if origin > destination:
+                        vertex_origin = forest.pop(origin)
+                        vertex_destination = forest.pop(destination)
+                    else:
+                        vertex_destination = forest.pop(destination)
+                        vertex_origin = forest.pop(origin)
+
+
+                    if '-' not in vertex_origin and '-' not in vertex_destination:
+                        forest.append(f'{vertex_origin}-{vertex_destination}-{edge[0]}')
+                    elif '-' not in vertex_destination:
+                        forest.append(vertex_origin+';'+f'{edge[1][0]}-{vertex_destination}-{edge[0]}')
+                    elif '-' not in vertex_origin:
+                        forest.append(vertex_destination+';'+f'{vertex_origin}-{edge[1][1]}-{edge[0]}')
+                    else:
+                        forest.append(vertex_origin+';'+vertex_destination+';'+f'{edge[1][0]}-{edge[1][1]}-{edge[0]}')
+        
+        from_vertex = search_in_forest(forest, origin_vertex)
+        
+        return forest[from_vertex] if from_vertex is not None else forest
+
+
+    def exist_path(self, origin, destination):
+        def __exist_path(graph, origin, destination):
+            result = False
+            vertex_pos = graph.search(origin, 'value')
+            if vertex_pos is not None:
+                if not graph[vertex_pos].visited:
+                    graph[vertex_pos].visited = True
+                    if graph[vertex_pos].value == destination:
+                        return True
+                    else:
+                        for edge in graph[vertex_pos].edges:
+                            destination_edge_pos = graph.search(edge.destination, 'value')
+                            if not graph[destination_edge_pos].visited:
+                                result = __exist_path(graph, graph[destination_edge_pos].value, destination)
+                                if result:
+                                    break
+            return result
+
+        for vertex in self:
+            vertex.visited = False
+
+        result = __exist_path(self, origin, destination)
+        return result
+
 g = Graph(is_dir=False)
 
 
 
-g.add_vertex(3)
-g.add_vertex(4)
-g.add_vertex(1)
-g.add_vertex(10)
+g.add_vertex('T')
+g.add_vertex('Z')
+g.add_vertex('X')
+g.add_vertex('R')
+g.add_vertex('F')
+# g.add_vertex(1)
+# g.add_vertex(10)
 
 
-g.add_edge(23, 4, 10)
-g.add_edge(10, 3, 1)
-g.add_edge(2, 10, 10)
-g.add_edge(7, 4, 1)
+g.add_edge(6, 'T', 'X')
+g.add_edge(3, 'T', 'F')
+g.add_edge(8, 'T', 'R')
+g.add_edge(2, 'F', 'X')
+g.add_edge(2, 'F', 'R')
+g.add_edge(5, 'X', 'R')
+g.add_edge(9, 'X', 'Z')
+g.add_edge(4, 'R', 'Z')
+# g.add_edge(10, 3, 1)
+# g.add_edge(2, 10, 10)
+# g.add_edge(7, 4, 1)
 
 
 # g.show()
 # print()
-# print(g.delete_edge(4, 10))
+# print('eliminado', g.delete_edge(4, 3))
 # print()
 # g.show()
 
@@ -116,4 +276,41 @@ g.add_edge(7, 4, 1)
 # print(g.delete_vertex(1))
 # print()
 
-g.show()
+# g.amplitude_show('A')
+
+# print()
+
+# g.amplitude_show('C') 
+
+
+exist_path = g.exist_path('T', 'C')
+
+if exist_path:
+    paths = g.dijkstra('T')
+
+    destination = 'Z'
+
+    peso_total = None
+
+    camino_completo = []
+
+    while paths.size() > 0:
+        value = paths.pop()
+        if value[0] == destination:
+            if peso_total is None:
+                peso_total = value[1]
+            camino_completo.append(value[0])
+            destination = value[2]
+    camino_completo.reverse()
+    print(f'el camino mas corto es: {"-".join(camino_completo)} con un costo de {peso_total}')
+
+print()
+min_tree = g.kruskal('T')
+
+print(min_tree)
+peso_total = 0
+for edge in min_tree.split(';'):
+    origin, destination, weight = edge.split('-')
+    print(f'origin {origin} destination {destination}')
+    peso_total += int(weight)
+print(f'peso total: {peso_total}')
