@@ -166,7 +166,6 @@ class Graph(List):
                 if pos is not None:
                     if costo_nodo_actual + edge.weight < no_visited.elements[pos][0]:
                         no_visited.elements[pos][1][2] = vertex[1][0]
-                        no_visited.elements[pos][0] = costo_nodo_actual + edge.weight
                         no_visited.change_priority(pos, costo_nodo_actual + edge.weight)
         return path                    
 
@@ -202,14 +201,14 @@ class Graph(List):
                         vertex_origin = forest.pop(origin)
 
 
-                    if '-' not in vertex_origin and '-' not in vertex_destination:
-                        forest.append(f'{vertex_origin}-{vertex_destination}-{edge[0]}')
-                    elif '-' not in vertex_destination:
-                        forest.append(vertex_origin+';'+f'{edge[1][0]}-{vertex_destination}-{edge[0]}')
-                    elif '-' not in vertex_origin:
-                        forest.append(vertex_destination+';'+f'{vertex_origin}-{edge[1][1]}-{edge[0]}')
+                    if '|' not in vertex_origin and '|' not in vertex_destination:
+                        forest.append(f'{vertex_origin}|{vertex_destination}|{edge[0]}')
+                    elif '|' not in vertex_destination:
+                        forest.append(vertex_origin+';'+f'{edge[1][0]}|{vertex_destination}|{edge[0]}')
+                    elif '|' not in vertex_origin:
+                        forest.append(vertex_destination+';'+f'{vertex_origin}|{edge[1][1]}|{edge[0]}')
                     else:
-                        forest.append(vertex_origin+';'+vertex_destination+';'+f'{edge[1][0]}-{edge[1][1]}-{edge[0]}')
+                        forest.append(vertex_origin+';'+vertex_destination+';'+f'{edge[1][0]}|{edge[1][1]}|{edge[0]}')
         
         from_vertex = search_in_forest(forest, origin_vertex)
         
@@ -240,77 +239,76 @@ class Graph(List):
         result = __exist_path(self, origin, destination)
         return result
 
-g = Graph(is_dir=False)
 
 
 
-g.add_vertex('T')
-g.add_vertex('Z')
-g.add_vertex('X')
-g.add_vertex('R')
-g.add_vertex('F')
-# g.add_vertex(1)
-# g.add_vertex(10)
+# g.add_vertex('T')
+# g.add_vertex('Z')
+# g.add_vertex('X')
+# g.add_vertex('R')
+# g.add_vertex('F')
+# # g.add_vertex(1)
+# # g.add_vertex(10)
 
 
-g.add_edge(6, 'T', 'X')
-g.add_edge(3, 'T', 'F')
-g.add_edge(8, 'T', 'R')
-g.add_edge(2, 'F', 'X')
-g.add_edge(2, 'F', 'R')
-g.add_edge(5, 'X', 'R')
-g.add_edge(9, 'X', 'Z')
-g.add_edge(4, 'R', 'Z')
-# g.add_edge(10, 3, 1)
-# g.add_edge(2, 10, 10)
-# g.add_edge(7, 4, 1)
+# g.add_edge(6, 'T', 'X')
+# g.add_edge(3, 'T', 'F')
+# g.add_edge(8, 'T', 'R')
+# g.add_edge(2, 'F', 'X')
+# g.add_edge(2, 'F', 'R')
+# g.add_edge(5, 'X', 'R')
+# g.add_edge(9, 'X', 'Z')
+# g.add_edge(4, 'R', 'Z')
+# # g.add_edge(10, 3, 1)
+# # g.add_edge(2, 10, 10)
+# # g.add_edge(7, 4, 1)
 
 
-# g.show()
+# # g.show()
+# # print()
+# # print('eliminado', g.delete_edge(4, 3))
+# # print()
+# # g.show()
+
+# # print()
+# # print(g.delete_vertex(1))
+# # print()
+
+# # g.amplitude_show('A')
+
+# # print()
+
+# # g.amplitude_show('C') 
+
+
+# exist_path = g.exist_path('T', 'C')
+
+# if exist_path:
+#     paths = g.dijkstra('T')
+
+#     destination = 'Z'
+
+#     peso_total = None
+
+#     camino_completo = []
+
+#     while paths.size() > 0:
+#         value = paths.pop()
+#         if value[0] == destination:
+#             if peso_total is None:
+#                 peso_total = value[1]
+#             camino_completo.append(value[0])
+#             destination = value[2]
+#     camino_completo.reverse()
+#     print(f'el camino mas corto es: {"-".join(camino_completo)} con un costo de {peso_total}')
+
 # print()
-# print('eliminado', g.delete_edge(4, 3))
-# print()
-# g.show()
+# min_tree = g.kruskal('T')
 
-# print()
-# print(g.delete_vertex(1))
-# print()
-
-# g.amplitude_show('A')
-
-# print()
-
-# g.amplitude_show('C') 
-
-
-exist_path = g.exist_path('T', 'C')
-
-if exist_path:
-    paths = g.dijkstra('T')
-
-    destination = 'Z'
-
-    peso_total = None
-
-    camino_completo = []
-
-    while paths.size() > 0:
-        value = paths.pop()
-        if value[0] == destination:
-            if peso_total is None:
-                peso_total = value[1]
-            camino_completo.append(value[0])
-            destination = value[2]
-    camino_completo.reverse()
-    print(f'el camino mas corto es: {"-".join(camino_completo)} con un costo de {peso_total}')
-
-print()
-min_tree = g.kruskal('T')
-
-print(min_tree)
-peso_total = 0
-for edge in min_tree.split(';'):
-    origin, destination, weight = edge.split('-')
-    print(f'origin {origin} destination {destination}')
-    peso_total += int(weight)
-print(f'peso total: {peso_total}')
+# print(min_tree)
+# peso_total = 0
+# for edge in min_tree.split(';'):
+#     origin, destination, weight = edge.split('-')
+#     print(f'origin {origin} destination {destination}')
+#     peso_total += int(weight)
+# print(f'peso total: {peso_total}')
