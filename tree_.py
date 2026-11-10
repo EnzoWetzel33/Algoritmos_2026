@@ -1,4 +1,3 @@
-
 from typing import Any, Optional
 
 from queue_ import Queue
@@ -94,6 +93,7 @@ class BinaryTree():
                         # input()
                         root.left, aux = __replace(root.left)
                         root.value = aux.value
+                        root.other_values = aux.other_values  # CORRECCION: copiar tambien los datos asociados
 
             root = self.auto_balance(root)
             self.update_height(root)
